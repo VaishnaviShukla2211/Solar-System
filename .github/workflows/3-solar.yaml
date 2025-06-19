@@ -59,7 +59,9 @@ jobs:
         with: 
           name: numberwise-${{ matrix.nodejsversion }}-onn-${{ matrix.os }}
           path: test-results.xml
-          code-coverage: 
+
+
+  code-coverage: 
     name: job container
     container: 
       image: node:18
@@ -99,7 +101,8 @@ jobs:
           path: coverage
           retention-days: 2
 
-docker: 
+
+  docker: 
     name: containerization 
     needs: [unit-testing, code-coverage]
     runs-on: ubuntu-latest
@@ -137,41 +140,20 @@ docker:
           context: .
           tags:  ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
           push: true
-dev_deploy: 
-  needs: docker
-  outputs: 
-    PORT: ${{ steps.myservice.outputs.PORT}}
-  environment: 
-    name: development
-    url: http://3.136.148.224:${{ steps.myservice.outputs.PORT}}
-  runs-on: ubuntu-latest
-  steps: 
+
+
+  dev_deploy: 
+    needs: docker
+    outputs: 
+      PORT: ${{ steps.myservice.outputs.PORT}}
+    environment: 
+      name: development
+      url: http://3.136.148.224:${{ steps.myservice.outputs.PORT}}
+    runs-on: ubuntu-latest
+    steps: 
       - name: checkout repo 
         uses: actions/checkout@v4
 
-      - name: using kubectl action 
-        uses:  azure/setup-kubectl@v4
-        with:
-          version: 'v1.30.0'
-
-      - name: login using kubeconfieg files 
-        uses: azure/k8s-set-context@v4
-        with:
-          method: kubeconfig
-          kubeconfig: "${{ secrets.KUBECONFIG }}"
-          context: kubernetes-admin@kubernetes
-
-      - name: runnnig kubectl commands
-        run: |
-              kubectl version 
-              kubectl get nodes  
-
-      - name: replaceing some token 
-        uses: cschleiden/replace-tokens@v1
-        with: 
-          tokenPrefix: '_{_'
-          tokenSuffix: '_}_'
-          files: '["kubernetes/development/*.yaml"]'
       - name: using kubectl action 
         uses:  azure/setup-kubectl@v4
         with:
@@ -231,6 +213,3 @@ dev_deploy:
           MAYANK: ${{ needs.dev_deploy.outputs.PORT }}
         run: | 
           curl  http://3.136.148.224:$MAYANK/live  -s -k  | grep -i live 
-
-
-
