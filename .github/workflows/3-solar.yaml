@@ -137,9 +137,7 @@ docker:
           context: .
           tags:  ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
           push: true
-
-
-  dev_deploy: 
+dev_deploy: 
     needs: docker
     outputs: 
       PORT: ${{ steps.myservice.outputs.PORT}}
@@ -197,7 +195,7 @@ docker:
           tokenPrefix: '_{_'
           tokenSuffix: '_}_'
           files: '["kubernetes/development/*.yaml"]'
-         env:
+        env:
           NAMESPACE: ${{ vars.NAMESPACE }}
           REPLICAS: ${{ vars.REPLICAS }}
           IMAGE: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha}}
