@@ -138,18 +138,18 @@ docker:
           tags:  ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
           push: true
 dev_deploy: 
-    needs: docker
-    outputs: 
-      PORT: ${{ steps.myservice.outputs.PORT}}
-    environment: 
-      name: development
-      url: http://3.136.148.224:${{ steps.myservice.outputs.PORT}}
-    runs-on: ubuntu-latest
-    steps: 
+  needs: docker
+  outputs: 
+    PORT: ${{ steps.myservice.outputs.PORT}}
+  environment: 
+    name: development
+    url: http://3.136.148.224:${{ steps.myservice.outputs.PORT}}
+  runs-on: ubuntu-latest
+  steps: 
       - name: checkout repo 
         uses: actions/checkout@v4
 
-       - name: using kubectl action 
+      - name: using kubectl action 
         uses:  azure/setup-kubectl@v4
         with:
           version: 'v1.30.0'
